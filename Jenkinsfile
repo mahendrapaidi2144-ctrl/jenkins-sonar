@@ -73,6 +73,7 @@ pipeline {
     }
         }
 
+    }
     post {
         always {
             archiveArtifacts artifacts: 'coverage/lcov.info', allowEmptyArchive: true
