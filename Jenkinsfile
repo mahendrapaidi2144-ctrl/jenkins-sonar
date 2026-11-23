@@ -73,7 +73,27 @@ pipeline {
         archiveArtifacts artifacts: '*.tgz', fingerprint: true
     }
         }
+        stage("scanartifactwithTrivy")
+        {
+            steps
+            {
+                 sh '''
+            # Full report (all severities) 
+            trivy rootfs --scanners vuln \
+                --severity LOW,MEDIUM,HIGH,CRITICAL \
+                --format table \
+                --output trivy-artifact-report.txt \
+                target/
 
+            # Quality gate – fail the build only on CRITICAL
+            trivy rootfs --scanners vuln \
+                --severity CRITICAL \
+                --exit-code 1 \
+                --no-progress \
+                target/
+        '''
+    }
+        }
     }
     post {
         always {
