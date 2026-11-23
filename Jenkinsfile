@@ -66,6 +66,10 @@ pipeline {
                 }
             }
         }
+        stage("BuildArtifact") {
+            steps
+            {
+                sh 'mvn package'
     }
 
     post {
