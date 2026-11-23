@@ -103,6 +103,43 @@ pipeline {
                 
     }
         }
+
+stage('Publish to Nexus') {
+    environment {
+        NEXUS_NPM = 'http://3.107.40.126:8081/repository/npm-hosted/'
+    }
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'nexus-creds',
+                                          usernameVariable: 'NEXUS_USER',
+                                          passwordVariable: 'NEXUS_PASS')]) {
+            sh '''
+                AUTH=$(echo -n "$NEXUS_USER:$NEXUS_PASS" | base64)
+                REG=${NEXUS_NPM#http:}
+
+                # Temporary .npmrc – only for this publish
+                cat > .npmrc-nexus <<EOF
+${REG}:_auth=${AUTH}
+${REG}:always-auth=true
+EOF
+
+                npm publish node-sonar-ci-*.tgz \
+                    --registry "$NEXUS_NPM" \
+                    --userconfig .npmrc-nexus
+            '''
+        }
+    }
+    post {
+        always {
+            sh 'rm -f .npmrc-nexus'
+        }
+    }
+}
+
+
+        
+
+
+        
     }
     post {
         always {
