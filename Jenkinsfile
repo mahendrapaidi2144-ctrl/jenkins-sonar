@@ -4,7 +4,7 @@ pipeline {
     tools {
         // Manage Jenkins > Tools > NodeJS installations > Name: nodejs
         nodejs 'nodejs'
-        maven3 'maven'
+        maven 'maven3'
     }
 
     environment {
