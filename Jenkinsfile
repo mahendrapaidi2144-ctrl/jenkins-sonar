@@ -77,21 +77,30 @@ pipeline {
         {
             steps
             {
-                 sh '''
-            # Full report (all severities) 
-            trivy rootfs --scanners vuln \
-                --severity LOW,MEDIUM,HIGH,CRITICAL \
-                --format table \
-                --output trivy-artifact-report.txt \
-                target/
+         sh '''
+            rm -rf trivy-scan && mkdir trivy-scan
+            tar -xzf node-sonar-ci-*.tgz -C trivy-scan
 
-            # Quality gate – fail the build only on CRITICAL
+            # npm pack strips the lock file – rebuild it (no install, no scripts run)
+            cd trivy-scan/package
+            npm install --package-lock-only --omit=dev --ignore-scripts
+            cd ../..
+
+            # Full report – vulnerabilities + secrets
+            trivy rootfs --scanners vuln,secret \
+                --format table \
+                --output trivy-npm-report.txt \
+                trivy-scan/package/
+
+            # Quality gate – fail on CRITICAL
             trivy rootfs --scanners vuln \
                 --severity CRITICAL \
                 --exit-code 1 \
                 --no-progress \
-                target/
+                trivy-scan/package/
         '''
+
+                
     }
         }
     }
