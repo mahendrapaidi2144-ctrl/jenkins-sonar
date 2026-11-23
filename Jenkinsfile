@@ -4,7 +4,6 @@ pipeline {
     tools {
         // Manage Jenkins > Tools > NodeJS installations > Name: nodejs
         nodejs 'nodejs'
-        maven 'maven3'
     }
 
     environment {
@@ -70,7 +69,8 @@ pipeline {
         stage("BuildArtifact") {
             steps
             {
-                sh 'mvn package'
+        sh 'npm pack'
+        archiveArtifacts artifacts: '*.tgz', fingerprint: true
     }
         }
 
