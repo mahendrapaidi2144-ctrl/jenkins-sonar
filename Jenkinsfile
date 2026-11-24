@@ -106,7 +106,7 @@ pipeline {
 
 stage('Publish to Nexus') {
     environment {
-        NEXUS_NPM = 'http://3.107.40.126:8081/repository/npm-hosted/'
+        NEXUS_NPM = 'http://3.107.40.126:8081/repository/npm/'
     }
     steps {
         withCredentials([usernamePassword(credentialsId: 'nexus-creds',
